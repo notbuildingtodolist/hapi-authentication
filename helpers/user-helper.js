@@ -21,9 +21,18 @@ const generateToken = (payload) => {
   })
 }
 
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (ex) {
+    throw new Error(ex.message);
+  }
+}
+
 module.exports = {
   generateToken,
   hashPassword,
   comparePassword,
   generateOtp,
+  verifyToken,
 };

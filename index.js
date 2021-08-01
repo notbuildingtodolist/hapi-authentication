@@ -6,6 +6,7 @@ const HapiSwagger = require("hapi-swagger");
 
 const routes = require("./routes");
 const { constants: { Environment: { HOST, PORT } } } = require("./config");
+const { authMiddleware } = require("./middlewares");
 
 const server = new Server({
   host: HOST,
@@ -34,6 +35,11 @@ const App = async () => {
   ]);
 
   await server.register(routes);
+
+  // Add strategy.
+  server.auth.scheme("custom", authMiddleware);
+  server.auth.strategy("default", "custom");
+  server.auth.default("default");
 
   console.log(`Server on port ${PORT}`);
   await server.start();

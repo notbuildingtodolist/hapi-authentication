@@ -1,5 +1,11 @@
 module.exports = {
 
+  "RESENDCODE200": { 
+    "message": "Code resent to user",
+    "status_code": 200,
+    "success": true,
+  },
+
   "USERCREATED200": {
     "message": "User created successfully",
     "status_code": 200,
@@ -58,6 +64,12 @@ module.exports = {
     "message": "User already verified",
     "status_code": 400,
     "success": false,
-  }
+  },
+
+  "ACCESS403": { 
+    "message": "Unauthorized access",
+    "status_code": 403,
+    "success": false,
+  },
 
 };

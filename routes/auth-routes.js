@@ -1,5 +1,5 @@
 const { authController } = require("../controllers");
-const { authValidation, registerValidation, verifyValidation } = require("../validations");
+const { authValidation, registerValidation, verifyValidation, resendValidation } = require("../validations");
 
 module.exports = { 
 
@@ -43,6 +43,20 @@ module.exports = {
           handler: authController.verifyUser,
           validate: {
             payload: verifyValidation,
+          }
+        }
+      },
+      {
+        method: "POST",
+        path: "/auth/resend",
+        config: {
+          auth: false,
+          description: "Resend code route",
+          description: "Resend code",
+          tags: ["api"],
+          handler: authController.resendCode,
+          validate: {
+            payload: resendValidation,
           }
         }
       }

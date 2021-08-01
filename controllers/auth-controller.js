@@ -83,7 +83,7 @@ const userRegister = async (req, h) => {
     });
 
     // Send the otp via mail to user.
-    mailHelper(email, "User verification mail", `Your otp is ${otp}`)
+    mailHelper(email, "User verification mail", `Your otp is ${otp}`);
 
     return responseHelper.success(h, "USERCREATED200");
 
@@ -155,8 +155,61 @@ const verifyUser = async (req, h) => {
   }
 }
 
+const resendCode = async (req, h) => {
+
+  try {
+
+    const { email } = req.payload;
+
+    // Check if userExists exists.
+    const userFound = await User.findOne({
+      where: {
+        email,
+      },
+      raw: true,
+      attributes: ['id', 'is_verified'],
+    });
+
+    // Does user exists?
+    if (!userFound) {
+      return responseHelper.error(h, "USEREXISTS404");
+    }
+
+    if (userFound.is_verified) {
+      return responseHelper.error(h, "USERVERIFIED400");
+    }
+
+    // Revoke all previous otp of user.
+    await UserVerification.update({
+      is_revoked: true,
+    }, {
+      where: {
+        user_id: userFound.id,
+      },
+    });
+
+    // Create a new verification for user.
+    const otp = userHelper.generateOtp();
+
+    // Create a record in user verifications.
+    await UserVerification.create({
+      otp,
+      user_id: userFound.id,
+    });
+
+    // Send the otp via mail to user.
+    mailHelper(email, "User verification mail", `Your otp is ${otp}`);
+    return responseHelper.success(h, "RESENDCODE200");
+
+  } catch (ex) { 
+    return responseHelper.error(h, "SERVER500", ex); 
+  }
+
+}
+
 module.exports = {
   userLogin,
   userRegister,
   verifyUser,
+  resendCode,
 };
